@@ -99,7 +99,7 @@ KNOWN_CITIES = {
           'ПРЕТОРИЯ', 'ПАВЛОВСКИЙ ПОСАД', 'ПОРТО-НОВО', 'ПЕТЕРГОФ', 'ПОЛОЦК', 'ПИНСК', 'ПЕРМЬ', 'ПАРАДАЙС'],
     'Р': ['РЕДИНГ', 'РУБЦОВСК', 'РАМАЛЛА', 'РОТТЕРДАМ', 'РЯЗАНЬ', 'РЫБИНСК', 'РИО-ДЕ-ЖАНЕЙРО', 'РАМЕНСКОЕ', 'РИЕКА',
           'РОСТОВ-НА-ДОНУ', 'РЕУТОВ', 'РОССОШЬ', 'РАНН', 'РИГА', 'РИЧМОНД', 'РОСТОВ', 'РЕЙКЬЯВИК', 'РАВАЛПИНДИ',
-          'РОГАЧЕВ', 'РОВНО', 'РЕЧИЦА', 'РЖЕВ', 'РОЖИЩЕ', 'РАБАТ', 'РИЗЕ'],
+          'РОГАЧЕВ', 'РОВНО', 'РЕЧИЦА', 'РЖЕВ', 'РОЖИЩЕ', 'РАБАТ', 'РИЗЕ', 'РИМ'],
     'С': ['СНЕЖНОЕ', 'СНЕЖИНСК', 'СЕВЕРОУРАЛЬСК', 'САНТА-ФЕ', 'СТАРЫЙ ОСКОЛ', 'САРАПУЛ', 'СТРУМИЦА', 'САН-ПАУЛУ',
           'СУХУМ', 'САН-АНТОНИО', 'СУРАБАЯ', 'СТОЛБЦЫ', 'САМАРРА', 'СТЕРЛИТАМАК', 'САРИ-ПУЛЬ', 'САРОВ', 'СКОПЬЕ',
           'СОЛФОРД', 'СМОЛЕВИЧИ', 'СУДАК', 'СИЛЬКЕБОРГ', 'СЛУЦК', 'СЕЙНЯЙОКИ', 'САН-ФРАНЦИСКО', 'САЗЕРЛЕНД-СПРИНГС',
@@ -374,6 +374,9 @@ class CitiesResponseBuilder:
         if movement_info.response_code == ResponseCode.ANSWER_TO_USER:
             is_result_correct = True
             city_name = movement_info.city
+        elif movement_info.response_code == ResponseCode.GAME_OVER:
+            is_result_correct = True
+            city_name = ""
         else:
             is_result_correct = False
             city_name = ""
@@ -401,19 +404,12 @@ class CitiesResponseBuilder:
             "LastUserInput": last_user_input
         }
 
-        wrapper = {
-            "isBase64Encoded": False,
-            "headers": {},
-            "body": json.dumps(response),
-            "statusCode": 200
-        }
-
-        return wrapper
+        return response
 
 
 class CitiesRequestParser:
     def __init__(self, event: object):
-        data_object = json.loads(event["body"])
+        data_object = event
         self.user_session_id = data_object["userSessionId"]
         self.city = data_object["requestText"]
 
@@ -427,4 +423,3 @@ def lambda_handler(event, context):
     response = handler.movement_response(result, parser.city)
 
     return response
-
