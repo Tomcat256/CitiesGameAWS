@@ -294,7 +294,7 @@ class CitiesGameSession():
 
         if not city:
             self.save_game()
-            return MovementInfo(response_code=ResponseCode.GAME_OVER)
+            return MovementInfo(last_letter=self.current_last_letter, response_code=ResponseCode.GAME_OVER)
 
         self.__redeem_city(city)
 
